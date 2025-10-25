@@ -4,4 +4,3 @@ endif
 ifeq ($(CONFIG_SLIVA_PATCH),n)
 $(info -- SUS patch was disabled!)
 endif
-obj-y += sus.o
