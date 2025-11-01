@@ -13,29 +13,7 @@
 #define getname_safe(name) (name == NULL ? ERR_PTR(-EINVAL) : getname(name))
 #define putname_safe(name) (IS_ERR(name) ? NULL : putname(name))
 #define uid_matches() (getuid() >= 2000)
-#define SUS_VERSION 4100
-
-//#define WORDS_ARRAY_SIZE 100
-//#define MAX_STR_LEN 100
-
-//static char* sus_words[WORDS_ARRAY_SIZE];
-//static int sus_i = 0;
-//static char sus_tmp[MAX_STR_LEN];//временный массив для слова
-//static int words_N = WORDS_ARRAY_SIZE ;
-//static bool sus_inited = false;
-
-    // free(words);
-    // удалять локальный массив вы не имеете права, вы память для него не выделяли
-    // всю память, что вы выделяли, от той и отказывайтесь
-/*static char* suspicious_paths[] = {
-	"/storage/emulated/0/TWRP",
-	"/system/lib/libzygisk.so",
-	"/system/lib64/libzygisk.so",
-	"/dev/zygisk",
-	"/system/addon.d",
-	"/vendor/bin/install-recovery.sh",
-	"/system/bin/install-recovery.sh"
-};*/
+#define SUS_VERSION 5000
 static char sus_words[99][99] = {
 "my/big/ball/s",
 "my/big/ball/s",
@@ -138,114 +116,7 @@ static char sus_words[99][99] = {
 "my/big/ball/s",
 "my/big/ball/s"
 };
-static char* suspicious_mount_types[] = {
-	"overlay"
-};
-
-static char suspicious_mount_paths[99][99] = {
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s"
-};
 static int sus_paths_count = 0;
-static int sus_mounts_count = 0;
 static uid_t getuid(void) {
 
 	const struct cred* const credentials = current_cred();
@@ -257,11 +128,8 @@ static uid_t getuid(void) {
 	return credentials->uid.val;
 
 }
-
 int is_suspicious_path(const struct path* const file)
 {
-	#ifdef CONFIG_SLIVA_PATCH
-	//if (!sus_inited) sus_init();
 	size_t index = 0;
 	size_t size = 4096;
 	int res = -1;
@@ -298,17 +166,7 @@ int is_suspicious_path(const struct path* const file)
 
 	res = end - path;
 	path[(size_t) res] = '\0';
-
-	/*for (index = 0; index < ARRAY_SIZE(suspicious_paths); index++) {
-		const char* const name = suspicious_paths[index];
-
-		if (memcmp(name, path, strlen(name)) == 0) {
-			printk(KERN_INFO "suspicious-fs: file or directory access to suspicious path '%s' won't be allowed to process with UID %i\n", name, getuid());
-            sus_count++;
-			status = 1;
-			goto out;
-		}
-	}*/
+	
     for (index = 0; index < ARRAY_SIZE(sus_words); index++) {
 		const char* const name = sus_words[index];
 
@@ -324,15 +182,10 @@ int is_suspicious_path(const struct path* const file)
 		kfree(path);
 
 	return status;
-	#else
-	return 0;
-	#endif
-
 }
 
 int suspicious_path(const struct filename* const name)
 {
-	#ifdef CONFIG_SLIVA_PATCH
 	int status = 0;
 	int ret = 0;
 	struct path path;
@@ -353,91 +206,12 @@ int suspicious_path(const struct filename* const name)
 	}
 
 	return status;
-	#else
-	return 0;
-	#endif
 
 }
 
-int is_suspicious_mount(struct vfsmount* const mnt, const struct path* const root)
-{
-	#ifdef CONFIG_SLIVA_PATCH
-	size_t index = 0;
-	size_t size = 4096;
-	int res = -1;
-	int status = 0;
-	char* path = NULL;
-	char* ptr = NULL;
-	char* end = NULL;
-
-	struct path mnt_path = {
-		.dentry = mnt->mnt_root,
-		.mnt = mnt
-	};
-
-	if (!uid_matches()) {
-		status = 0;
-		goto out;
-	}
-
-	for (index = 0; index < ARRAY_SIZE(suspicious_mount_types); index++) {
-		const char* name = suspicious_mount_types[index];
-
-		if (strcmp(mnt->mnt_root->d_sb->s_type->name, name) == 0) {
-			printk(KERN_INFO "suspicious-fs: mount point with suspicious type '%s' won't be shown to process with UID %i\n", mnt->mnt_root->d_sb->s_type->name, getuid());
-            sus_mounts_count++;
-			status = 1;
-			goto out;
-		}
-	}
-
-	path = kmalloc(size, GFP_KERNEL);
-
-	if (path == NULL) {
-		status = -1;
-		goto out;
-	}
-
-	ptr = __d_path(&mnt_path, root, path, size);
-
-	if (!ptr) {
-		status = -1;
-		goto out;
-	}
-
-	end = mangle_path(path, ptr, " \t\n\\");
-
-	if (!end) {
-		status = -1;
-		goto out;
-	}
-
-	res = end - path;
-	path[(size_t) res] = '\0';
-
-	for (index = 0; index < ARRAY_SIZE(suspicious_mount_paths); index++) {
-		const char* name = suspicious_mount_paths[index];
-
-		if (memcmp(path, name, strlen(name)) == 0) {
-			printk(KERN_INFO "suspicious-fs: mount point with suspicious path '%s' won't be shown to process with UID %i\n", path, getuid());
-            sus_mounts_count++;
-			status = 1;
-			goto out;
-		}
-	}
-
-	out:
-		kfree(path);
-
-	return status;
-	#else
-	return 0;
-	#endif
-
-}
 int get_sus_multi(int arg) {
     if (arg==0) return sus_paths_count;
-	if (arg==1) return sus_mounts_count;
+	if (arg==1) return 100;
   if (arg==2) return SUS_VERSION;
 	return 10;
 }
@@ -445,26 +219,5 @@ int set_suspicious_path(char * sus_path,int index) {
 	strcpy(sus_words[index],sus_path);
 	return 10;
 }
-int set_suspicious_mount(char * sus_mount,int index) {
-	strcpy(suspicious_mount_paths[index],sus_mount);
-	return 10;
-}
-/*int sus_init() {
-    for (sus_i = 0; sus_i < WORDS_ARRAY_SIZE; sus_i++) {
-		//sus_words[sus_i] = NULL;
-	//}
-    for (sus_i = 0; sus_i < WORDS_ARRAY_SIZE ; sus_i++){
-		strcpy(sus_tmp,"my/big/ball/s");
-		if (strlen(sus_tmp) == 1 && sus_tmp[0] == 'X')  {
-        words_N = sus_i ;
-        break;  
-		}
-	}
-    sus_words[sus_i] = (char *)kmalloc(sizeof(char)*(strlen(sus_tmp) + 1),GFP_KERNEL);
-    strcpy(sus_words[sus_i],sus_tmp);
-	sus_inited = true;
-		
-	return 1;
-}*/
 #define _LINUX_SUS_SLIVA
 #endif
