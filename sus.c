@@ -13,7 +13,7 @@
 #define getname_safe(name) (name == NULL ? ERR_PTR(-EINVAL) : getname(name))
 #define putname_safe(name) (IS_ERR(name) ? NULL : putname(name))
 #define uid_matches() (getuid() >= 2000)
-#define SUS_VERSION 6000
+#define SUS_VERSION 6001
 #define SUS_DELETED 100
 #define SUS_OK 10
 #define SUS_FAIL 9
@@ -146,8 +146,10 @@ int sus_clean_all() {
 	return SUS_OK;
 }
 int sus_auto_add() {
-	sus_try_add("/stoarge/emulated/0/TWRP");
+	sus_try_add("/storage/emulated/0/TWRP");
 	sus_try_add("/system/addon.d");
+	sus_try_add("/vendor/bin/install-recovery.sh");
+	sus_try_add("/system/bin/install-recovery.sh");
 	return SUS_OK;
 }
 int get_sus_multi(int arg) {
