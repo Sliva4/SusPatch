@@ -18,7 +18,7 @@
 #define SUS_OK 10
 #define SUS_FAIL 9
 #define SUS_PATHS_SIZE 10
-static char sus_paths[SUS_PATHS_SIZE] = {
+static char sus_paths[SUS_PATHS_SIZE][50] = {
 "ex/am/pl/e",
 "ex/am/pl/e",
 "ex/am/pl/e",
