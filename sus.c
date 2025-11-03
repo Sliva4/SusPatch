@@ -124,7 +124,7 @@ int suspicious_path(const struct filename* const name)
 int sus_try_add(char * sus_path) {
 	int sus_i = 0;
 	bool sus_writed = false;
-	for (sus_i = 0;sus_i++;sus_i<SUS_PATHS_SIZE) {
+	for (sus_i = 0;sus_i<SUS_PATHS_SIZE;sus_i++) {
 		if (sus_paths[sus_i]=="ex/am/pl/e") {
 			strcpy(sus_paths[sus_i],sus_path);
 			sus_writed = true;
@@ -138,36 +138,30 @@ int sus_try_add(char * sus_path) {
 }
 int sus_clean_all() {
 	int sus_i = 0;
-	for (sus_i = 0;sus_i++;sus_i<SUS_PATHS_SIZE) {
+	for (sus_i = 0;sus_i<SUS_PATHS_SIZE;sus_i++) {
 		strcpy(sus_paths[sus_i],"ex/am/pl/e");
 		printk(KERN_INFO "suspicious-fs: clean sus_paths[%d]", sus_i);
 	}
 	sus_paths_count = 0;
 	return SUS_OK;
 }
-#ifdef CONFIG_SLIVA_PATCH_AUTO_ADD
 int sus_auto_add() {
-	sus_try_add("/sdcard/TWRP");
+	sus_try_add("/stoarge/emulated/0/TWRP");
 	sus_try_add("/system/addon.d");
 	return SUS_OK;
 }
-#endif
 int get_sus_multi(int arg) {
     if (arg==0) return sus_paths_count;
 	if (arg==1) return SUS_DELETED;
     if (arg==2) return SUS_VERSION;
-	#ifdef CONFIG_SLIVA_PATCH_AUTO_ADD
 	if (arg==3) return sus_auto_add();
-	#else
-	if (arg==3) return SUS_DELETED;
-	#endif
 	if (arg==4) return sus_clean_all();
 	if (arg==5) return SUS_PATHS_SIZE;
 	return SUS_FAIL;
 }
 int set_suspicious_path(char * sus_path,int index) {
 	if (index==SUS_PATHS_SIZE) {
-		sus_try_add(sus_path);
+		return sus_try_add(sus_path);
 	} else {
 	strcpy(sus_paths[index],sus_path);
 	}
