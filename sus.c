@@ -1,4 +1,4 @@
-#ifndef _LINUX_SUS_SLIVA
+#ifdef CONFIG_SLIVA_PATCH
 #include <linux/string.h>
 #include <linux/types.h>
 #include <linux/cred.h>
@@ -13,108 +13,22 @@
 #define getname_safe(name) (name == NULL ? ERR_PTR(-EINVAL) : getname(name))
 #define putname_safe(name) (IS_ERR(name) ? NULL : putname(name))
 #define uid_matches() (getuid() >= 2000)
-#define SUS_VERSION 5000
-static char sus_words[99][99] = {
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s",
-"my/big/ball/s"
+#define SUS_VERSION 6000
+#define SUS_DELETED 100
+#define SUS_OK 10
+#define SUS_FAIL 9
+#define SUS_PATHS_SIZE 10
+static char sus_paths[SUS_PATHS_SIZE] = {
+"ex/am/pl/e",
+"ex/am/pl/e",
+"ex/am/pl/e",
+"ex/am/pl/e",
+"ex/am/pl/e",
+"ex/am/pl/e",
+"ex/am/pl/e",
+"ex/am/pl/e",
+"ex/am/pl/e",
+"ex/am/pl/e"
 };
 static int sus_paths_count = 0;
 static uid_t getuid(void) {
@@ -167,12 +81,11 @@ int is_suspicious_path(const struct path* const file)
 	res = end - path;
 	path[(size_t) res] = '\0';
 	
-    for (index = 0; index < ARRAY_SIZE(sus_words); index++) {
-		const char* const name = sus_words[index];
+    for (index = 0; index < ARRAY_SIZE(sus_paths); index++) {
+		const char* const name = sus_paths[index];
 
 		if (memcmp(name, path, strlen(name)) == 0) {
 			printk(KERN_INFO "suspicious-fs: file or directory access to suspicious path '%s' won't be allowed to process with UID %i\n", name, getuid());
-            sus_paths_count++;
 			status = 1;
 			goto out;
 		}
@@ -208,16 +121,56 @@ int suspicious_path(const struct filename* const name)
 	return status;
 
 }
-
+int sus_try_add(char * sus_path) {
+	int sus_i = 0;
+	bool sus_writed = false;
+	for (sus_i = 0;sus_i++;sus_i<SUS_PATHS_SIZE) {
+		if (sus_paths[sus_i]=="ex/am/pl/e") {
+			strcpy(sus_paths[sus_i],sus_path);
+			sus_writed = true;
+			sus_paths_count++;
+			printk(KERN_INFO "suspicious-fs: writed %s to sus_paths[%d]", sus_path, sus_i);
+			break;
+		}
+	}
+	if (sus_writed==true) return SUS_OK;
+	return SUS_FAIL;
+}
+int sus_clean_all() {
+	int sus_i = 0;
+	for (sus_i = 0;sus_i++;sus_i<SUS_PATHS_SIZE) {
+		strcpy(sus_paths[sus_i],"ex/am/pl/e");
+		printk(KERN_INFO "suspicious-fs: clean sus_paths[%d]", sus_i);
+	}
+	sus_paths_count = 0;
+	return SUS_OK;
+}
+#ifdef CONFIG_SLIVA_PATCH_AUTO_ADD
+int sus_auto_add() {
+	sus_try_add("/sdcard/TWRP");
+	sus_try_add("/system/addon.d");
+	return SUS_OK;
+}
+#endif
 int get_sus_multi(int arg) {
     if (arg==0) return sus_paths_count;
-	if (arg==1) return 100;
-  if (arg==2) return SUS_VERSION;
-	return 10;
+	if (arg==1) return SUS_DELETED;
+    if (arg==2) return SUS_VERSION;
+	#ifdef CONFIG_SLIVA_PATCH_AUTO_ADD
+	if (arg==3) return sus_auto_add();
+	#else
+	if (arg==3) return SUS_DELETED;
+	#endif
+	if (arg==4) return sus_clean_all();
+	if (arg==5) return SUS_PATHS_SIZE;
+	return SUS_FAIL;
 }
 int set_suspicious_path(char * sus_path,int index) {
-	strcpy(sus_words[index],sus_path);
-	return 10;
+	if (index==SUS_PATHS_SIZE) {
+		sus_try_add(sus_path);
+	} else {
+	strcpy(sus_paths[index],sus_path);
+	}
+	return SUS_OK;
 }
-#define _LINUX_SUS_SLIVA
 #endif
