@@ -125,7 +125,7 @@ int sus_try_add(char * sus_path) {
 	int sus_i = 0;
 	bool sus_writed = false;
 	for (sus_i = 0;sus_i<SUS_PATHS_SIZE;sus_i++) {
-		if (sus_paths[sus_i]=="ex/am/pl/e") {
+		if (strcmp(sus_paths[sus_i],"ex/am/pl/e") == 0) {
 			strcpy(sus_paths[sus_i],sus_path);
 			sus_writed = true;
 			sus_paths_count++;
