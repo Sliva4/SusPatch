@@ -1,15 +1,4 @@
-#ifdef CONFIG_SLIVA_PATCH
-#include <linux/string.h>
-#include <linux/types.h>
-#include <linux/cred.h>
-#include <linux/fs.h>
-#include <linux/path.h>
-#include <linux/slab.h>
-#include <linux/seq_file.h>
-#include <linux/printk.h>
-#include <linux/mount.h>
-#include <linux/namei.h>
-#include <linux/suspicious.h>
+#include <linux/sus.h>
 #define getname_safe(name) (name == NULL ? ERR_PTR(-EINVAL) : getname(name))
 #define putname_safe(name) (IS_ERR(name) ? NULL : putname(name))
 #define uid_matches() (getuid() >= 2000)
@@ -85,7 +74,7 @@ int is_suspicious_path(const struct path* const file)
 		const char* const name = sus_paths[index];
 
 		if (memcmp(name, path, strlen(name)) == 0) {
-			printk(KERN_INFO "suspicious-fs: file or directory access to suspicious path '%s' won't be allowed to process with UID %i\n", name, getuid());
+			printk(KERN_INFO "sus-hide: file or directory access to suspicious path '%s' won't be allowed to process with UID %i\n", name, getuid());
 			status = 1;
 			goto out;
 		}
@@ -129,7 +118,7 @@ int sus_try_add(char * sus_path) {
 			strcpy(sus_paths[sus_i],sus_path);
 			sus_writed = true;
 			sus_paths_count++;
-			printk(KERN_INFO "suspicious-fs: writed %s to sus_paths[%d]", sus_path, sus_i);
+			printk(KERN_INFO "sus-hide: writed %s to sus_paths[%d]", sus_path, sus_i);
 			break;
 		}
 	}
@@ -140,7 +129,7 @@ int sus_clean_all() {
 	int sus_i = 0;
 	for (sus_i = 0;sus_i<SUS_PATHS_SIZE;sus_i++) {
 		strcpy(sus_paths[sus_i],"ex/am/pl/e");
-		printk(KERN_INFO "suspicious-fs: clean sus_paths[%d]", sus_i);
+		printk(KERN_INFO "sus-hide: clean sus_paths[%d]", sus_i);
 	}
 	sus_paths_count = 0;
 	return SUS_OK;
@@ -169,4 +158,3 @@ int set_suspicious_path(char * sus_path,int index) {
 	}
 	return SUS_OK;
 }
-#endif
